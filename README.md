@@ -35,7 +35,7 @@ A comprehensive Python SDK for building AI-powered applications with support for
 ### Required Dependencies
 - **Docker** (required for OpenMemory)
 - **OpenAI API Key** (required for LLM interactions and OpenMemory)
-- **Python 3.8+**
+- **Python 3.9+**
 
 ### Setting up OpenMemory
 
