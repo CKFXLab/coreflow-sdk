@@ -205,3 +205,17 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Mac
+DS_Store
+
+# SDK Specific
+src/models/
+
+# Environemnet Variables
+.env.*
+**/.env.*
+!src/.env
+
+# Backup files
+**/*.bak

@@ -1,0 +1,203 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "coreflow-sdk"
+version = "0.1.0"
+description = "A Python SDK for building dynamic AI/ML workflows with pluggable models and components"
+readme = "README.md"
+license = "MIT"
+authors = [
+    {name = "CKFXLab", email = "info@ckfx.io"},
+]
+maintainers = [
+    {name = "CKFXLab", email = "info@ckfx.io"},
+]
+keywords = [
+    "ai", "ml", "workflow", "automation", "models", "sdk", "machine-learning", 
+    "artificial-intelligence", "pipeline", "framework"
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Distributed Computing",
+]
+requires-python = ">=3.8"
+dependencies = [
+    # Core dependencies
+    "pydantic>=2.11.0",
+    "typing-extensions>=4.14.0",
+    
+    # AI/ML and Memory
+    "mem0ai>=0.1.111",
+    "openai>=1.91.0",
+    "anthropic>=0.57.0",
+    
+    # Vector and RAG
+    "qdrant-client>=1.14.0",
+    "transformers>=4.53.0",
+    "torch>=2.7.0",
+    "huggingface-hub>=0.33.0",
+    
+    # Web scraping and search
+    "requests>=2.32.0",
+    "playwright>=1.52.0",
+    "beautifulsoup4>=4.12.0",
+    "lxml>=5.3.0",
+    
+    # Data processing
+    "pandas>=2.3.0",
+    "numpy>=2.3.0",
+    "datasets>=3.6.0",
+    "python-magic==0.4.27",
+    "PyPDF2>=3.0.0",
+    "python-docx>=1.1.0",
+    "openpyxl>=3.1.0",
+    
+    # Database and storage
+    "SQLAlchemy>=2.0.0",
+    "alembic>=1.16.0",
+    
+    # Utilities
+    "python-dotenv>=1.1.0",
+    "colorlog>=6.9.0",
+    "tenacity>=9.1.0",
+    "click>=8.2.0",
+    "rich>=14.0.0",
+    "PyYAML>=6.0.0",
+    "ujson>=5.10.0",
+    "diskcache>=5.6.0",
+    "cachetools>=6.1.0",
+    "json-repair>=0.47.0",
+    
+    # LLM utilities
+    "litellm>=1.74.0",
+]
+
+[project.optional-dependencies]
+# Development dependencies
+dev = [
+    "pytest>=8.4.0",
+    "pytest-cov>=4.0.0",
+    "pytest-asyncio>=1.0.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
+]
+
+# Documentation dependencies
+docs = [
+    "mkdocs>=1.4.0",
+    "mkdocs-material>=9.0.0",
+    "mkdocstrings[python]>=0.20.0",
+]
+
+# AWS/Bedrock support
+aws = [
+    "boto3>=1.39.0",
+    "botocore>=1.39.0",
+]
+
+# Advanced ML features
+ml = [
+    "dspy-ai>=2.6.0",
+    "optuna>=4.4.0",
+    "safetensors>=0.5.0",
+    "tiktoken>=0.9.0",
+    "tokenizers>=0.21.0",
+    "joblib>=1.5.0",
+    "cloudpickle>=3.1.0",
+]
+
+# Web scraping enhancements
+web = [
+    "playwright>=1.52.0",
+    "pyee>=13.0.0",
+]
+
+# All optional features
+all = [
+    "coreflow-sdk[dev,docs,aws,ml,web]",
+]
+
+[project.urls]
+Homepage = "https://github.com/CKFXLab/coreflow-sdk"
+Documentation = "https://github.com/CKFXLab/coreflow-sdk#readme"
+Repository = "https://github.com/CKFXLab/coreflow-sdk"
+Issues = "https://github.com/CKFXLab/coreflow-sdk/issues"
+Changelog = "https://github.com/CKFXLab/coreflow-sdk/releases"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.black]
+line-length = 88
+target-version = ['py38', 'py39', 'py310', 'py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--cov=coreflow_sdk",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
+]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = ["E203", "W503"]
+exclude = [".git", "__pycache__", ".venv", "build", "dist"]
