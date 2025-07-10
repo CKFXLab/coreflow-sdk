@@ -11,7 +11,7 @@ This module tests the complete credential-aware system including:
 
 import os
 import pytest
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 
 from coreflow_sdk.utils.env import ENV
 from coreflow_sdk.model.registry import get_model_registry
@@ -463,10 +463,13 @@ class TestEdgeCases:
     def test_workflow_graceful_degradation(self):
         """Test workflow graceful degradation with component failures."""
         with patch.dict(os.environ, {"OPENAI_API_KEY": "test-openai-key"}, clear=True):
+            # Mock the mem0.Memory.from_config method to prevent connection issues
+            mock_memory_client = Mock()
+            
             # Mock successful model client but failed search client
             with (
                 patch("coreflow_sdk.model.api.openai.OpenAIClient"),
-                patch("coreflow_sdk.vector.Mem0"),
+                patch("mem0.Memory.from_config", return_value=mock_memory_client),
                 patch("coreflow_sdk.vector.rag.QdrantClient"),
                 patch(
                     "coreflow_sdk.websearch.search.Search",
