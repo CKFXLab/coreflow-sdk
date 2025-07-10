@@ -357,7 +357,7 @@ class TestFastAPIIntegration:
 
     def test_models_endpoint_filtering(self):
         """Test that models endpoint returns only available models."""
-        from server.api.main import app
+        from coreflow_sdk.server.api.main import app
         from fastapi.testclient import TestClient
 
         client = TestClient(app)
@@ -375,7 +375,7 @@ class TestFastAPIIntegration:
 
     def test_credentials_endpoint(self):
         """Test credentials status endpoint."""
-        from server.api.main import app
+        from coreflow_sdk.server.api.main import app
         from fastapi.testclient import TestClient
 
         client = TestClient(app)
@@ -391,7 +391,7 @@ class TestFastAPIIntegration:
 
     def test_workflow_status_endpoint(self):
         """Test workflow status endpoint."""
-        from server.api.main import app
+        from coreflow_sdk.server.api.main import app
         from fastapi.testclient import TestClient
 
         client = TestClient(app)

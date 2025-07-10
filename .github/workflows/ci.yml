@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.9, 3.10, 3.11]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
     steps:
       - name: Checkout repository
@@ -42,4 +42,6 @@ jobs:
         run: flake8 src tests
 
       - name: Run tests
-        run: pytest tests/ --maxfail=1 --disable-warnings -q
+        run: |
+          export PYTHONPATH=$PWD/src:$PYTHONPATH
+          pytest tests/ --maxfail=1 --disable-warnings -q
