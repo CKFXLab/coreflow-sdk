@@ -1,4 +1,5 @@
 import os
+import pytest
 from unittest.mock import patch, Mock
 from coreflow_sdk.utils.env import ENV
 from coreflow_sdk.vector._default import (
@@ -206,33 +207,41 @@ class TestEmbeddingConfiguration:
             # Should create OpenAI client
             assert hasattr(client, "generate_embedding")
 
-    @patch("boto3.Session")
-    def test_create_bedrock_embedding_client(self, mock_session):
+    def test_create_bedrock_embedding_client(self):
         """Test creating Bedrock embedding client."""
-        with patch.dict(
-            os.environ,
-            {
-                "ANTHROPIC_API_KEY": "test_key",
-                "OPENAI_API_KEY": "test_key",
-                "HF_TOKEN": "test_token",
-                "MEM0_API_KEY": "test_key",
-                "SERPER_API_KEY": "test_key",
-                "EMBEDDING_PROVIDER": "bedrock",
-                "AWS_REGION": "us-east-1",
-            },
-            clear=True,
-        ):
-            # Mock boto3 session and clients
-            mock_session_instance = Mock()
-            mock_session.return_value = mock_session_instance
-            mock_session_instance.client.return_value = Mock()
+        # Skip test if boto3 is not available
+        try:
+            import boto3
+        except ImportError:
+            pytest.skip(
+                "boto3 not available (install with 'pip install coreflow-sdk[aws]')"
+            )
 
-            env = ENV()
-            client = create_embedding_client(env)
+        with patch("boto3.Session") as mock_session:
+            with patch.dict(
+                os.environ,
+                {
+                    "ANTHROPIC_API_KEY": "test_key",
+                    "OPENAI_API_KEY": "test_key",
+                    "HF_TOKEN": "test_token",
+                    "MEM0_API_KEY": "test_key",
+                    "SERPER_API_KEY": "test_key",
+                    "EMBEDDING_PROVIDER": "bedrock",
+                    "AWS_REGION": "us-east-1",
+                },
+                clear=True,
+            ):
+                # Mock boto3 session and clients
+                mock_session_instance = Mock()
+                mock_session.return_value = mock_session_instance
+                mock_session_instance.client.return_value = Mock()
 
-            assert client is not None
-            # Should create Bedrock client
-            assert hasattr(client, "generate_embedding")
+                env = ENV()
+                client = create_embedding_client(env)
+
+                assert client is not None
+                # Should create Bedrock client
+                assert hasattr(client, "generate_embedding")
 
     def test_environment_info(self):
         """Test environment info retrieval."""
