@@ -234,12 +234,12 @@ class TestWorkflowCredentialAwareness:
             clear=True,
         ):
             # Mock the actual clients to avoid real API calls
-            with patch("coreflow_sdk.model.api.openai.OpenAIClient"), patch(
-                "coreflow_sdk.vector.memory.Memory"
-            ), patch("coreflow_sdk.vector.rag.QdrantClient"), patch(
-                "coreflow_sdk.websearch.search.Search"
-            ), patch(
-                "coreflow_sdk.websearch.scrape.Scrape"
+            with (
+                patch("coreflow_sdk.model.api.openai.OpenAIClient"),
+                patch("coreflow_sdk.vector.memory.Memory"),
+                patch("coreflow_sdk.vector.rag.QdrantClient"),
+                patch("coreflow_sdk.websearch.search.Search"),
+                patch("coreflow_sdk.websearch.scrape.Scrape"),
             ):
 
                 workflow = BaseWorkflow()
@@ -251,9 +251,11 @@ class TestWorkflowCredentialAwareness:
         """Test workflow with limited credentials."""
         with patch.dict(os.environ, {"OPENAI_API_KEY": "test-openai-key"}, clear=True):
             # Mock the actual clients
-            with patch("coreflow_sdk.model.api.openai.OpenAIClient"), patch(
-                "coreflow_sdk.vector.memory.Memory"
-            ), patch("coreflow_sdk.vector.rag.QdrantClient"):
+            with (
+                patch("coreflow_sdk.model.api.openai.OpenAIClient"),
+                patch("coreflow_sdk.vector.memory.Memory"),
+                patch("coreflow_sdk.vector.rag.QdrantClient"),
+            ):
 
                 workflow = BaseWorkflow()
                 assert workflow.model_config["provider"] == "openai"
@@ -272,9 +274,11 @@ class TestWorkflowCredentialAwareness:
         """Test workflow component status reporting."""
         with patch.dict(os.environ, {"OPENAI_API_KEY": "test-openai-key"}, clear=True):
             # Mock the actual clients
-            with patch("coreflow_sdk.model.api.openai.OpenAIClient"), patch(
-                "coreflow_sdk.vector.memory.Memory"
-            ), patch("coreflow_sdk.vector.rag.QdrantClient"):
+            with (
+                patch("coreflow_sdk.model.api.openai.OpenAIClient"),
+                patch("coreflow_sdk.vector.memory.Memory"),
+                patch("coreflow_sdk.vector.rag.QdrantClient"),
+            ):
 
                 workflow = BaseWorkflow()
                 status = workflow.get_component_status()
@@ -288,9 +292,11 @@ class TestWorkflowCredentialAwareness:
         """Test workflow validation with credential warnings."""
         with patch.dict(os.environ, {"OPENAI_API_KEY": "test-openai-key"}, clear=True):
             # Mock the actual clients
-            with patch("coreflow_sdk.model.api.openai.OpenAIClient"), patch(
-                "coreflow_sdk.vector.memory.Memory"
-            ), patch("coreflow_sdk.vector.rag.QdrantClient"):
+            with (
+                patch("coreflow_sdk.model.api.openai.OpenAIClient"),
+                patch("coreflow_sdk.vector.memory.Memory"),
+                patch("coreflow_sdk.vector.rag.QdrantClient"),
+            ):
 
                 workflow = BaseWorkflow()
                 validation = workflow.validate_workflow()
@@ -398,9 +404,11 @@ class TestFastAPIIntegration:
 
         with patch.dict(os.environ, {"OPENAI_API_KEY": "test-openai-key"}, clear=True):
             # Mock the actual clients
-            with patch("coreflow_sdk.model.api.openai.OpenAIClient"), patch(
-                "coreflow_sdk.vector.memory.Memory"
-            ), patch("coreflow_sdk.vector.rag.QdrantClient"):
+            with (
+                patch("coreflow_sdk.model.api.openai.OpenAIClient"),
+                patch("coreflow_sdk.vector.memory.Memory"),
+                patch("coreflow_sdk.vector.rag.QdrantClient"),
+            ):
 
                 response = client.get("/workflow/status")
                 assert response.status_code == 200
@@ -456,11 +464,14 @@ class TestEdgeCases:
         """Test workflow graceful degradation with component failures."""
         with patch.dict(os.environ, {"OPENAI_API_KEY": "test-openai-key"}, clear=True):
             # Mock successful model client but failed search client
-            with patch("coreflow_sdk.model.api.openai.OpenAIClient"), patch(
-                "coreflow_sdk.vector.memory.Mem0"
-            ), patch("coreflow_sdk.vector.rag.QdrantClient"), patch(
-                "coreflow_sdk.websearch.search.Search",
-                side_effect=Exception("Search failed"),
+            with (
+                patch("coreflow_sdk.model.api.openai.OpenAIClient"),
+                patch("coreflow_sdk.vector.memory.Mem0"),
+                patch("coreflow_sdk.vector.rag.QdrantClient"),
+                patch(
+                    "coreflow_sdk.websearch.search.Search",
+                    side_effect=Exception("Search failed"),
+                ),
             ):
 
                 workflow = BaseWorkflow()
