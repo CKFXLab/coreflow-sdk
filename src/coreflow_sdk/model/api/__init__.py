@@ -4,11 +4,10 @@ from .openai import OpenAIClient, OpenAITrainingJob, OpenAIReinforceJob
 __all__ = [
     # Abstract base classes
     "APIModel",
-    "APITrainingJob", 
+    "APITrainingJob",
     "APIReinforceJob",
-    
     # Concrete implementations
     "OpenAIClient",
     "OpenAITrainingJob",
-    "OpenAIReinforceJob"
+    "OpenAIReinforceJob",
 ]

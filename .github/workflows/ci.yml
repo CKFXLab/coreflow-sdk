@@ -42,4 +42,4 @@ jobs:
         run: flake8 src tests
 
       - name: Run tests
-        run: pytest --maxfail=1 --disable-warnings -q
+        run: pytest tests/ --maxfail=1 --disable-warnings -q

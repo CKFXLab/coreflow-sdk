@@ -32,7 +32,7 @@ pytest
 
 ## Style Guidelines
 * **Formater**: [Black](https://github.com/psf/black)
-* **Linter**: PEP8
+* **Linter**: [Flake8](https://flake8.pycqa.org/en/latest/)
 
 Run formatting and linting before committing:
 ```bash
