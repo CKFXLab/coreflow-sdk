@@ -4,7 +4,7 @@
 
 # Python SDK
 
-[![CI Status](https://img.shields.io/github/actions/workflow/status/CKFXLab/coreflow-sdk/ci.yml?branch=master&label=CI&logo=github)](https://github.com/CKFXLab/coreflow-sdk/.github/workflows/ci.yml)
+[![CI Status](https://img.shields.io/github/actions/workflow/status/CKFXLab/coreflow-sdk/ci.yml?branch=master&label=CI&logo=github)](https://github.com/CKFXLab/coreflow-sdk/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 
