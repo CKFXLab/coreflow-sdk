@@ -79,7 +79,7 @@ dependencies = [
     "ujson>=5.10.0",
     "diskcache>=5.6.0",
     "cachetools>=6.1.0",
-    "json-repair>=0.47.0",
+    "json-repair>=0.25.0",
     
     # LLM utilities
     "litellm>=1.74.0",
