@@ -162,53 +162,77 @@ class TestAnthropicConnection:
 class TestBedrockConnection:
     """Test AWS Bedrock connection functionality."""
 
-    @patch("boto3.client")
-    def test_bedrock_client_initialization(self, mock_boto_client):
+    def test_bedrock_client_initialization(self):
         """Test Bedrock client initializes correctly."""
-        # Configure mock
-        mock_client = Mock()
-        mock_boto_client.return_value = mock_client
-
         try:
-            from coreflow_sdk.model.bedrock.anthropic import BedrockAnthropicClient
+            # Try to import boto3 first
+            import boto3
 
-            client = BedrockAnthropicClient()
-            assert client is not None
-            assert "bedrock" in client.provider.lower()
+            with patch("boto3.client") as mock_boto_client:
+                # Configure mock
+                mock_client = Mock()
+                mock_boto_client.return_value = mock_client
+
+                try:
+                    from coreflow_sdk.model.bedrock.anthropic import (
+                        BedrockAnthropicClient,
+                    )
+
+                    client = BedrockAnthropicClient()
+                    assert client is not None
+                    assert "bedrock" in client.provider.lower()
+
+                except ImportError:
+                    # If Bedrock not available, verify concept
+                    region = "us-east-1"
+                    model_id = "anthropic.claude-3-sonnet"
+                    assert len(region) > 0
+                    assert len(model_id) > 0
+                except Exception:
+                    # AWS credentials not available in CI - expected
+                    assert True
 
         except ImportError:
-            # If Bedrock not available, verify concept
-            region = "us-east-1"
-            model_id = "anthropic.claude-3-sonnet"
-            assert len(region) > 0
-            assert len(model_id) > 0
-        except Exception:
-            # AWS credentials not available in CI - expected
-            assert True
+            # boto3 not available - skip test
+            import pytest
 
-    @patch("boto3.client")
-    def test_bedrock_connection_validation(self, mock_boto_client):
+            pytest.skip("boto3 not available - AWS Bedrock tests require 'aws' extra")
+
+    def test_bedrock_connection_validation(self):
         """Test Bedrock connection validation."""
-        # Configure mock
-        mock_client = Mock()
-        mock_client.list_foundation_models.return_value = {
-            "modelSummaries": [{"modelId": "anthropic.claude-3-sonnet"}]
-        }
-        mock_boto_client.return_value = mock_client
-
         try:
-            from coreflow_sdk.model.bedrock.anthropic import BedrockAnthropicClient
+            # Try to import boto3 first
+            import boto3
 
-            client = BedrockAnthropicClient()
-            is_valid = client.validate_connection()
-            assert isinstance(is_valid, bool)
+            with patch("boto3.client") as mock_boto_client:
+                # Configure mock
+                mock_client = Mock()
+                mock_client.list_foundation_models.return_value = {
+                    "modelSummaries": [{"modelId": "anthropic.claude-3-sonnet"}]
+                }
+                mock_boto_client.return_value = mock_client
+
+                try:
+                    from coreflow_sdk.model.bedrock.anthropic import (
+                        BedrockAnthropicClient,
+                    )
+
+                    client = BedrockAnthropicClient()
+                    is_valid = client.validate_connection()
+                    assert isinstance(is_valid, bool)
+
+                except ImportError:
+                    # If Bedrock not available, verify validation concept
+                    assert True
+                except Exception:
+                    # AWS credentials not available in CI - expected
+                    assert True
 
         except ImportError:
-            # If Bedrock not available, verify validation concept
-            assert True
-        except Exception:
-            # AWS credentials not available in CI - expected
-            assert True
+            # boto3 not available - skip test
+            import pytest
+
+            pytest.skip("boto3 not available - AWS Bedrock tests require 'aws' extra")
 
 
 class TestAPIErrorHandling:
