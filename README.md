@@ -554,7 +554,7 @@ See [FastAPI Reference](.github/docs/API_REFERENCE.md)
 #### Model Endpoints
 - `GET /models` - List available models
 - `GET /models/{name}` - Get model details
-- `POST /models/{name}/healthcheck` - Health check
+- `POST /models/{name}/health` - Health check
 
 #### Health Endpoints
 - `GET /health` - Basic health check
@@ -773,7 +773,8 @@ src/coreflow_sdk/
 └── utils/                      # Core utilities
     ├── __init__.py            # Utils package exports
     ├── env.py                 # Environment handling & credential detection
-    └── audit.py               # Auditing tools
+    ├── audit.py               # Auditing tools
+    └── streaming.py           # WebSocket streaming utilities
 ```
 
 This architecture eliminates hardcoded dependencies and enables:
@@ -872,7 +873,7 @@ mypy src
 - ✅ Multi-Agent Workflows
 - ✅ API-Enhanced Workflows
 - ✅ Custom Workflow Extensions
-- 🔄 WebSocket Support (Planned)
+- ✅ WebSocket Support
 - 🔄 GraphQL API (Planned)
 - 🔄 Monitoring Dashboard (Planned)
 - 🔄 Plugin system for custom components (Planned)

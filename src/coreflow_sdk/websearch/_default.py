@@ -10,7 +10,7 @@ KEYWORDS = [
     "this week",
     "this month",
     "this year",
-    "updated",  
+    "updated",
     "breaking",
     "news",
     "trending",
@@ -37,5 +37,5 @@ KEYWORDS = [
     "latest trends",
     "latest events",
     "latest developments",
-    "latest information"
+    "latest information",
 ]

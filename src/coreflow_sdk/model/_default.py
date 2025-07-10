@@ -2,11 +2,11 @@
 # Now powered by centralized model registry
 
 from .registry import (
-    get_model_registry, 
-    get_default_model, 
+    get_model_registry,
+    get_default_model,
     get_provider_defaults,
     Provider,
-    ModelType
+    ModelType,
 )
 
 # Get registry instance
@@ -45,9 +45,9 @@ PROVIDER_ENV_VARS = {
 
 # Provider import paths for dynamic loading
 PROVIDER_IMPORT_PATHS = {
-    Provider.OPENAI.value: "sdk.model.api.openai",
-    Provider.ANTHROPIC.value: "sdk.model.api.anthropic",
-    Provider.BEDROCK.value: "sdk.model.bedrock.anthropic",
+    Provider.OPENAI.value: "coreflow_sdk.model.api.openai",
+    Provider.ANTHROPIC.value: "coreflow_sdk.model.api.anthropic",
+    Provider.BEDROCK.value: "coreflow_sdk.model.bedrock.anthropic",
 }
 
 # Export ModelType and Provider from registry for backward compatibility
@@ -61,4 +61,4 @@ DEFAULT_FALLBACK_CONFIG = {
     "timeout": 30,
     "num_retries": 3,
     "cache": True,
-} 
+}

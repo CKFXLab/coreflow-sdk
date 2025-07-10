@@ -610,14 +610,361 @@ def chat_endpoint(request: Request):
 
 ## WebSocket Support
 
-Future versions will support WebSocket connections for real-time chat:
+The CoreFlow SDK now supports real-time WebSocket streaming for chat responses. This enables users to receive streaming responses in real-time through WebSocket connections.
+
+### WebSocket Chat Endpoint
+
+**Endpoint:** `ws://localhost:8000/ws/chat`
+
+**Connection Parameters:**
+- `user_id` (query parameter, optional): User identifier (default: "default_user")
+
+**Message Format:**
+```json
+{
+  "query": "string",
+  "user_id": "string (optional)"
+}
+```
+
+**Response Stream:**
+```json
+{"type": "start", "data": {"query": "user query", "user_id": "user123"}}
+{"type": "context", "data": {"context_gathered": true}}
+{"type": "chunk", "data": {"content": "Hello"}}
+{"type": "chunk", "data": {"content": " world"}}
+{"type": "chunk", "data": {"content": "!"}}
+{"type": "complete", "data": {"response": "Hello world!"}}
+```
+
+### FastAPI WebSocket Implementation
+
+```python
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from coreflow_sdk.workflow import BaseWorkflow
+from coreflow_sdk.utils.streaming import StreamingResponse
+from coreflow_sdk.model.utils import gpt4o_mini_config
+import json
+
+app = FastAPI(title="CoreFlow WebSocket API")
+
+# Initialize workflow
+workflow = BaseWorkflow(
+    model_config=gpt4o_mini_config(),
+    enable_memory=True,
+    enable_rag=True,
+    enable_websearch=True
+)
+
+@app.websocket("/ws/chat")
+async def websocket_chat(websocket: WebSocket, user_id: str = "default_user"):
+    await websocket.accept()
+    
+    try:
+        while True:
+            # Receive message from client
+            data = await websocket.receive_text()
+            message = json.loads(data)
+            
+            query = message.get("query")
+            user_id = message.get("user_id", user_id)
+            
+            if not query:
+                await websocket.send_text(json.dumps({
+                    "type": "error",
+                    "data": {"error": "Query is required"}
+                }))
+                continue
+            
+            # Stream response using CoreFlow SDK
+            streaming = StreamingResponse(workflow)
+            await streaming.to_websocket(websocket, query, user_id)
+            
+    except WebSocketDisconnect:
+        print(f"Client {user_id} disconnected")
+    except Exception as e:
+        await websocket.send_text(json.dumps({
+            "type": "error",
+            "data": {"error": str(e)}
+        }))
+```
+
+### JavaScript Client Example
 
 ```javascript
-const ws = new WebSocket('ws://localhost:8000/ws/chat');
+const ws = new WebSocket('ws://localhost:8000/ws/chat?user_id=user123');
+
+ws.onopen = function(event) {
+    console.log('Connected to WebSocket');
+    
+    // Send a query
+    ws.send(JSON.stringify({
+        query: "What is machine learning?",
+        user_id: "user123"
+    }));
+};
+
 ws.onmessage = function(event) {
     const data = JSON.parse(event.data);
-    console.log('Received:', data);
+    
+    switch(data.type) {
+        case 'start':
+            console.log('Query started:', data.data.query);
+            break;
+        case 'context':
+            console.log('Context gathered');
+            break;
+        case 'chunk':
+            // Stream content to UI
+            document.getElementById('response').innerHTML += data.data.content;
+            break;
+        case 'complete':
+            console.log('Response complete:', data.data.response);
+            break;
+        case 'error':
+            console.error('Error:', data.data.error);
+            break;
+    }
 };
+
+ws.onclose = function(event) {
+    console.log('WebSocket connection closed');
+};
+
+ws.onerror = function(error) {
+    console.error('WebSocket error:', error);
+};
+```
+
+### Python Client Example
+
+```python
+import asyncio
+import websockets
+import json
+
+async def chat_client():
+    uri = "ws://localhost:8000/ws/chat?user_id=user123"
+    
+    async with websockets.connect(uri) as websocket:
+        # Send query
+        await websocket.send(json.dumps({
+            "query": "Explain quantum computing",
+            "user_id": "user123"
+        }))
+        
+        # Receive streaming response
+        async for message in websocket:
+            data = json.loads(message)
+            
+            if data["type"] == "chunk":
+                print(data["data"]["content"], end="", flush=True)
+            elif data["type"] == "complete":
+                print(f"\n\nComplete response: {data['data']['response']}")
+                break
+            elif data["type"] == "error":
+                print(f"Error: {data['data']['error']}")
+                break
+
+# Run the client
+asyncio.run(chat_client())
+```
+
+### Advanced WebSocket Features
+
+#### Multiple Concurrent Sessions
+
+```python
+from typing import Dict
+import uuid
+
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: Dict[str, WebSocket] = {}
+        self.workflow = BaseWorkflow(
+            model_config=gpt4o_mini_config(),
+            enable_memory=True,
+            enable_rag=True,
+            enable_websearch=True
+        )
+    
+    async def connect(self, websocket: WebSocket, user_id: str):
+        await websocket.accept()
+        connection_id = str(uuid.uuid4())
+        self.active_connections[connection_id] = websocket
+        return connection_id
+    
+    def disconnect(self, connection_id: str):
+        if connection_id in self.active_connections:
+            del self.active_connections[connection_id]
+    
+    async def handle_message(self, websocket: WebSocket, message: dict, user_id: str):
+        query = message.get("query")
+        if not query:
+            await websocket.send_text(json.dumps({
+                "type": "error",
+                "data": {"error": "Query is required"}
+            }))
+            return
+        
+        # Stream response
+        streaming = StreamingResponse(self.workflow)
+        await streaming.to_websocket(websocket, query, user_id)
+
+manager = ConnectionManager()
+
+@app.websocket("/ws/chat")
+async def websocket_endpoint(websocket: WebSocket, user_id: str = "default_user"):
+    connection_id = await manager.connect(websocket, user_id)
+    
+    try:
+        while True:
+            data = await websocket.receive_text()
+            message = json.loads(data)
+            await manager.handle_message(websocket, message, user_id)
+            
+    except WebSocketDisconnect:
+        manager.disconnect(connection_id)
+    except Exception as e:
+        await websocket.send_text(json.dumps({
+            "type": "error",
+            "data": {"error": str(e)}
+        }))
+        manager.disconnect(connection_id)
+```
+
+#### WebSocket with Authentication
+
+```python
+from fastapi import HTTPException, status
+from fastapi.security import HTTPBearer
+import jwt
+
+security = HTTPBearer()
+
+async def verify_token(token: str):
+    try:
+        payload = jwt.decode(token, "your-secret-key", algorithms=["HS256"])
+        return payload.get("user_id")
+    except jwt.PyJWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token"
+        )
+
+@app.websocket("/ws/chat")
+async def authenticated_websocket(websocket: WebSocket, token: str):
+    try:
+        user_id = await verify_token(token)
+        await websocket.accept()
+        
+        # Handle WebSocket communication
+        streaming = StreamingResponse(workflow)
+        
+        while True:
+            data = await websocket.receive_text()
+            message = json.loads(data)
+            query = message.get("query")
+            
+            if query:
+                await streaming.to_websocket(websocket, query, user_id)
+                
+    except HTTPException as e:
+        await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+    except WebSocketDisconnect:
+        print(f"User {user_id} disconnected")
+```
+
+### WebSocket Error Handling
+
+```python
+@app.websocket("/ws/chat")
+async def websocket_chat_with_error_handling(websocket: WebSocket, user_id: str = "default_user"):
+    await websocket.accept()
+    
+    try:
+        while True:
+            try:
+                data = await websocket.receive_text()
+                message = json.loads(data)
+                
+                # Validate message
+                if not isinstance(message, dict) or "query" not in message:
+                    await websocket.send_text(json.dumps({
+                        "type": "error",
+                        "data": {"error": "Invalid message format. Expected: {\"query\": \"your question\"}"}
+                    }))
+                    continue
+                
+                query = message["query"]
+                if not query.strip():
+                    await websocket.send_text(json.dumps({
+                        "type": "error",
+                        "data": {"error": "Query cannot be empty"}
+                    }))
+                    continue
+                
+                # Check if workflow supports streaming
+                if not workflow.supports_streaming():
+                    await websocket.send_text(json.dumps({
+                        "type": "error",
+                        "data": {"error": "Streaming not supported with current model configuration"}
+                    }))
+                    continue
+                
+                # Stream response
+                streaming = StreamingResponse(workflow)
+                await streaming.to_websocket(websocket, query, user_id)
+                
+            except json.JSONDecodeError:
+                await websocket.send_text(json.dumps({
+                    "type": "error",
+                    "data": {"error": "Invalid JSON format"}
+                }))
+            except Exception as e:
+                await websocket.send_text(json.dumps({
+                    "type": "error",
+                    "data": {"error": f"Processing error: {str(e)}"}
+                }))
+                
+    except WebSocketDisconnect:
+        print(f"Client {user_id} disconnected")
+    except Exception as e:
+        print(f"WebSocket error: {e}")
+        await websocket.close(code=1011)  # Internal error
+```
+
+### Testing WebSocket Endpoints
+
+```python
+import pytest
+from fastapi.testclient import TestClient
+
+def test_websocket_chat():
+    client = TestClient(app)
+    
+    with client.websocket_connect("/ws/chat?user_id=test_user") as websocket:
+        # Send query
+        websocket.send_text(json.dumps({
+            "query": "Hello, world!",
+            "user_id": "test_user"
+        }))
+        
+        # Receive and verify response
+        events = []
+        while True:
+            data = websocket.receive_text()
+            event = json.loads(data)
+            events.append(event)
+            
+            if event["type"] == "complete":
+                break
+        
+        # Verify event sequence
+        assert events[0]["type"] == "start"
+        assert events[1]["type"] == "context"
+        assert any(event["type"] == "chunk" for event in events)
+        assert events[-1]["type"] == "complete"
 ```
 
 ## SDK Integration

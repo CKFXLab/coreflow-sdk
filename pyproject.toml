@@ -24,15 +24,16 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
+
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: System :: Distributed Computing",
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = [
     # Core dependencies
     "pydantic>=2.11.0",
@@ -46,7 +47,7 @@ dependencies = [
     # Vector and RAG
     "qdrant-client>=1.14.0",
     "transformers>=4.53.0",
-    "torch>=2.7.0",
+    "torch>=2.0.0",
     "huggingface-hub>=0.33.0",
     
     # Web scraping and search
@@ -56,8 +57,8 @@ dependencies = [
     "lxml>=5.3.0",
     
     # Data processing
-    "pandas>=2.3.0",
-    "numpy>=2.3.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
     "datasets>=3.6.0",
     "python-magic==0.4.27",
     "PyPDF2>=3.0.0",
@@ -72,16 +73,21 @@ dependencies = [
     "python-dotenv>=1.1.0",
     "colorlog>=6.9.0",
     "tenacity>=9.1.0",
-    "click>=8.2.0",
-    "rich>=14.0.0",
+    "click>=8.0.0",
+    "rich>=13.0.0",
     "PyYAML>=6.0.0",
     "ujson>=5.10.0",
     "diskcache>=5.6.0",
     "cachetools>=6.1.0",
-    "json-repair>=0.47.0",
+    "json-repair>=0.25.0",
     
     # LLM utilities
     "litellm>=1.74.0",
+    
+    # WebSocket support
+    "websockets>=12.0",
+    "fastapi>=0.104.0",
+    "python-multipart>=0.0.9",
 ]
 
 [project.optional-dependencies]
@@ -92,6 +98,7 @@ dev = [
     "pytest-asyncio>=1.0.0",
     "black>=23.0.0",
     "flake8>=6.0.0",
+    "autoflake>=2.0.0",
     "mypy>=1.0.0",
     "pre-commit>=3.0.0",
 ]
@@ -146,7 +153,7 @@ where = ["src"]
 
 [tool.black]
 line-length = 88
-target-version = ['py38', 'py39', 'py310', 'py311']
+target-version = ['py39', 'py310', 'py311', 'py312']
 include = '\.pyi?$'
 extend-exclude = '''
 /(
@@ -178,7 +185,7 @@ python_classes = ["Test*"]
 python_functions = ["test_*"]
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.9"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true

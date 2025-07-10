@@ -4,9 +4,8 @@ from .anthropic import BedrockAnthropicClient
 __all__ = [
     # Abstract base classes
     "BedrockModel",
-    "BedrockTrainingJob", 
+    "BedrockTrainingJob",
     "BedrockReinforceJob",
-    
     # Concrete implementations
-    "BedrockAnthropicClient"
+    "BedrockAnthropicClient",
 ]
