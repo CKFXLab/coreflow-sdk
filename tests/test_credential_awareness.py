@@ -253,7 +253,7 @@ class TestWorkflowCredentialAwareness:
             # Mock the actual clients
             with (
                 patch("coreflow_sdk.model.api.openai.OpenAIClient"),
-                patch("coreflow_sdk.vector.memory.Memory"),
+                patch("mem0.Memory"),
                 patch("coreflow_sdk.vector.rag.QdrantClient"),
             ):
 
@@ -276,7 +276,7 @@ class TestWorkflowCredentialAwareness:
             # Mock the actual clients
             with (
                 patch("coreflow_sdk.model.api.openai.OpenAIClient"),
-                patch("coreflow_sdk.vector.memory.Memory"),
+                patch("mem0.Memory"),
                 patch("coreflow_sdk.vector.rag.QdrantClient"),
             ):
 
@@ -294,7 +294,7 @@ class TestWorkflowCredentialAwareness:
             # Mock the actual clients
             with (
                 patch("coreflow_sdk.model.api.openai.OpenAIClient"),
-                patch("coreflow_sdk.vector.memory.Memory"),
+                patch("mem0.Memory"),
                 patch("coreflow_sdk.vector.rag.QdrantClient"),
             ):
 
@@ -406,7 +406,7 @@ class TestFastAPIIntegration:
             # Mock the actual clients
             with (
                 patch("coreflow_sdk.model.api.openai.OpenAIClient"),
-                patch("coreflow_sdk.vector.memory.Memory"),
+                patch("mem0.Memory"),
                 patch("coreflow_sdk.vector.rag.QdrantClient"),
             ):
 
@@ -466,7 +466,7 @@ class TestEdgeCases:
             # Mock successful model client but failed search client
             with (
                 patch("coreflow_sdk.model.api.openai.OpenAIClient"),
-                patch("coreflow_sdk.vector.memory.Mem0"),
+                patch("coreflow_sdk.vector.Mem0"),
                 patch("coreflow_sdk.vector.rag.QdrantClient"),
                 patch(
                     "coreflow_sdk.websearch.search.Search",
