@@ -465,7 +465,7 @@ class TestEdgeCases:
         with patch.dict(os.environ, {"OPENAI_API_KEY": "test-openai-key"}, clear=True):
             # Mock the mem0.Memory.from_config method to prevent connection issues
             mock_memory_client = Mock()
-            
+
             # Mock successful model client but failed search client
             with (
                 patch("coreflow_sdk.model.api.openai.OpenAIClient"),
