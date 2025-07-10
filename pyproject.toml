@@ -87,6 +87,7 @@ dependencies = [
     # WebSocket support
     "websockets>=12.0",
     "fastapi>=0.104.0",
+    "python-multipart>=0.0.9",
 ]
 
 [project.optional-dependencies]
