@@ -12,31 +12,31 @@ from coreflow_sdk.vector import Mem0 as Memory
 class TestMemoryInitialization:
     """Test memory system initialization."""
 
-    @patch("mem0.Memory")
-    def test_memory_initialization(self, mock_mem0):
+    @patch("mem0.Memory.from_config")
+    def test_memory_initialization(self, mock_from_config):
         """Test memory system initializes correctly."""
         # Configure mock
         mock_mem0_instance = Mock()
-        mock_mem0.from_config.return_value = mock_mem0_instance
+        mock_from_config.return_value = mock_mem0_instance
 
         try:
             memory = Memory()
             assert memory is not None
         except Exception:
             # If initialization fails, verify mock was attempted
-            assert mock_mem0.called or mock_mem0.from_config.called
+            assert mock_mem0.called or mock_from_config.called
 
 
 class TestConversationStorage:
     """Test conversation storage functionality."""
 
-    @patch("mem0.Memory")
-    def test_store_user_conversation(self, mock_mem0):
+    @patch("mem0.Memory.from_config")
+    def test_store_user_conversation(self, mock_from_config):
         """Test storing user conversation in memory."""
         # Configure mock
         mock_mem0_instance = Mock()
         mock_mem0_instance.add.return_value = True
-        mock_mem0.from_config.return_value = mock_mem0_instance
+        mock_from_config.return_value = mock_mem0_instance
 
         try:
             memory = Memory()
@@ -58,13 +58,13 @@ class TestConversationStorage:
             assert len(content) > 0
             assert isinstance(metadata, dict)
 
-    @patch("mem0.Memory")
-    def test_store_system_memory(self, mock_mem0):
+    @patch("mem0.Memory.from_config")
+    def test_store_system_memory(self, mock_from_config):
         """Test storing system-level memory."""
         # Configure mock
         mock_mem0_instance = Mock()
         mock_mem0_instance.add.return_value = True
-        mock_mem0.from_config.return_value = mock_mem0_instance
+        mock_from_config.return_value = mock_mem0_instance
 
         try:
             memory = Memory()
@@ -87,8 +87,8 @@ class TestConversationStorage:
 class TestMemoryRetrieval:
     """Test memory retrieval functionality."""
 
-    @patch("mem0.Memory")
-    def test_get_user_memory_context(self, mock_mem0):
+    @patch("mem0.Memory.from_config")
+    def test_get_user_memory_context(self, mock_from_config):
         """Test retrieving user memory context."""
         # Configure mock
         mock_mem0_instance = Mock()
@@ -96,7 +96,7 @@ class TestMemoryRetrieval:
             {"memory": "User prefers Python over JavaScript", "score": 0.9},
             {"memory": "User is learning machine learning", "score": 0.8},
         ]
-        mock_mem0.from_config.return_value = mock_mem0_instance
+        mock_from_config.return_value = mock_mem0_instance
 
         try:
             memory = Memory()
@@ -112,15 +112,15 @@ class TestMemoryRetrieval:
             assert len(user_id) > 0
             assert len(query) > 0
 
-    @patch("mem0.Memory")
-    def test_get_system_memory_context(self, mock_mem0):
+    @patch("mem0.Memory.from_config")
+    def test_get_system_memory_context(self, mock_from_config):
         """Test retrieving system memory context."""
         # Configure mock
         mock_mem0_instance = Mock()
         mock_mem0_instance.search.return_value = [
             {"memory": "System handles API rate limiting gracefully", "score": 0.85}
         ]
-        mock_mem0.from_config.return_value = mock_mem0_instance
+        mock_from_config.return_value = mock_mem0_instance
 
         try:
             memory = Memory()
@@ -138,14 +138,14 @@ class TestMemoryRetrieval:
 class TestUserMemoryIsolation:
     """Test user memory isolation."""
 
-    @patch("mem0.Memory")
-    def test_user_memory_separation(self, mock_mem0):
+    @patch("mem0.Memory.from_config")
+    def test_user_memory_separation(self, mock_from_config):
         """Test that different users' memories are isolated."""
         # Configure mock
         mock_mem0_instance = Mock()
         mock_mem0_instance.add.return_value = True
         mock_mem0_instance.search.return_value = []  # No cross-user results
-        mock_mem0.from_config.return_value = mock_mem0_instance
+        mock_from_config.return_value = mock_mem0_instance
 
         try:
             memory = Memory()
@@ -173,13 +173,13 @@ class TestUserMemoryIsolation:
             user2_memory = "User 2 likes dogs"
             assert user1_memory != user2_memory
 
-    @patch("mem0.Memory")
-    def test_system_vs_user_memory_separation(self, mock_mem0):
+    @patch("mem0.Memory.from_config")
+    def test_system_vs_user_memory_separation(self, mock_from_config):
         """Test separation between system and user memories."""
         # Configure mock
         mock_mem0_instance = Mock()
         mock_mem0_instance.add.return_value = True
-        mock_mem0.from_config.return_value = mock_mem0_instance
+        mock_from_config.return_value = mock_mem0_instance
 
         try:
             memory = Memory()
@@ -211,8 +211,8 @@ class TestUserMemoryIsolation:
 class TestMemoryContextGeneration:
     """Test memory context generation for workflows."""
 
-    @patch("mem0.Memory")
-    def test_combined_memory_context(self, mock_mem0):
+    @patch("mem0.Memory.from_config")
+    def test_combined_memory_context(self, mock_from_config):
         """Test combining user and system memory for context."""
         # Configure mock
         mock_mem0_instance = Mock()
@@ -220,7 +220,7 @@ class TestMemoryContextGeneration:
             {"memory": "User prefers detailed explanations", "score": 0.9},
             {"memory": "System should provide examples", "score": 0.8},
         ]
-        mock_mem0.from_config.return_value = mock_mem0_instance
+        mock_from_config.return_value = mock_mem0_instance
 
         try:
             memory = Memory()
@@ -242,13 +242,13 @@ class TestMemoryContextGeneration:
             assert len(query) > 0
             assert isinstance(mock_context, str)
 
-    @patch("mem0.Memory")
-    def test_conversation_history_storage(self, mock_mem0):
+    @patch("mem0.Memory.from_config")
+    def test_conversation_history_storage(self, mock_from_config):
         """Test storing complete conversation history."""
         # Configure mock
         mock_mem0_instance = Mock()
         mock_mem0_instance.add.return_value = True
-        mock_mem0.from_config.return_value = mock_mem0_instance
+        mock_from_config.return_value = mock_mem0_instance
 
         try:
             memory = Memory()
@@ -279,11 +279,11 @@ class TestMemoryContextGeneration:
 class TestMemoryErrorHandling:
     """Test memory system error handling."""
 
-    @patch("mem0.Memory")
-    def test_memory_unavailable_graceful_degradation(self, mock_mem0):
+    @patch("mem0.Memory.from_config")
+    def test_memory_unavailable_graceful_degradation(self, mock_from_config):
         """Test graceful degradation when memory service is unavailable."""
         # Configure mock to simulate failure
-        mock_mem0.from_config.side_effect = Exception("Memory service unavailable")
+        mock_from_config.side_effect = Exception("Memory service unavailable")
 
         try:
             memory = Memory()
@@ -296,13 +296,13 @@ class TestMemoryErrorHandling:
             # Expected behavior - memory service might not be available
             assert True  # This is acceptable for CI environments
 
-    @patch("mem0.Memory")
-    def test_memory_operation_failure_handling(self, mock_mem0):
+    @patch("mem0.Memory.from_config")
+    def test_memory_operation_failure_handling(self, mock_from_config):
         """Test handling of memory operation failures."""
         # Configure mock
         mock_mem0_instance = Mock()
         mock_mem0_instance.add.side_effect = Exception("Memory operation failed")
-        mock_mem0.from_config.return_value = mock_mem0_instance
+        mock_from_config.return_value = mock_mem0_instance
 
         try:
             memory = Memory()
