@@ -24,7 +24,7 @@ class TestMemoryInitialization:
             assert memory is not None
         except Exception:
             # If initialization fails, verify mock was attempted
-            assert mock_mem0.called or mock_from_config.called
+            assert mock_from_config.called
 
 
 class TestConversationStorage:
